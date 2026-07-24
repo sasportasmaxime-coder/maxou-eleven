@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>MAXOU ELEVEN — Écris ta légende, enfoiré</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💀</text></svg>">
 <style>
@@ -24,12 +24,15 @@ body.light .sum-line.bad{color:#dc2626}
 body.light .hdr{box-shadow:0 6px 20px rgba(0,0,0,.12)}
 body.light .badge.REG{background:#e2e0d6;color:#555}
 button.primary{color:#fff}
-#themeBtn{position:fixed;top:10px;right:10px;z-index:99;display:inline-block;width:auto;margin:0;
-  padding:7px 11px;border-radius:999px;font-size:1rem;line-height:1;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+#themeBtn{position:fixed;top:auto;bottom:calc(14px + env(safe-area-inset-bottom));right:14px;z-index:99;
+  width:46px;height:46px;margin:0;padding:0;border-radius:999px;font-size:1.25rem;line-height:46px;text-align:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.4)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
 body{min-height:100vh}
-#app{max-width:520px;margin:0 auto;padding:14px 14px 60px}
+#app{max-width:520px;margin:0 auto;padding:14px 14px 90px;
+  padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));
+  padding-top:max(14px,env(safe-area-inset-top))}
 h1.logo{font-size:2.4rem;font-weight:900;letter-spacing:-1px;text-align:center;line-height:1;margin:30px 0 6px;
   background:linear-gradient(135deg,var(--neon),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;text-transform:uppercase}
 .tagline{text-align:center;color:var(--dim);font-size:.95rem;margin-bottom:26px}
@@ -38,7 +41,8 @@ h1.logo{font-size:2.4rem;font-weight:900;letter-spacing:-1px;text-align:center;l
 .card h2{font-size:1.05rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
 .card .sub{color:var(--dim);font-size:.88rem;margin-bottom:14px}
 button{display:block;width:100%;text-align:left;background:var(--card2);border:1px solid var(--line);color:var(--txt);
-  border-radius:12px;padding:13px 15px;margin:8px 0;font-size:.95rem;cursor:pointer;transition:transform .06s,border-color .12s;font-family:inherit}
+  border-radius:12px;padding:13px 15px;margin:8px 0;font-size:.95rem;cursor:pointer;transition:transform .06s,border-color .12s;font-family:inherit;
+  touch-action:manipulation;-webkit-tap-highlight-color:rgba(255,45,85,.18)}
 button:hover{border-color:var(--gold)}
 button:active{transform:scale(.98)}
 button .b-desc{display:block;color:var(--dim);font-size:.8rem;margin-top:3px;font-weight:400}
@@ -69,7 +73,7 @@ button.ghost{text-align:center;color:var(--dim);background:none;border-style:das
 .ovr{font-weight:900;color:var(--gold)}
 .money{color:var(--green);font-weight:700}
 .stars{color:var(--gold);font-size:.8rem;letter-spacing:1px}
-.sheetbtn{width:auto;margin:0;padding:4px 10px;border-radius:8px;font-size:.9rem}
+.sheetbtn{width:auto;margin:0;padding:0 12px;min-height:40px;min-width:46px;border-radius:10px;font-size:1rem}
 .bars{margin-top:10px;display:grid;gap:5px}
 .bar-lab{display:flex;justify-content:space-between;font-size:.66rem;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
 .bar{height:6px;background:#22222e;border-radius:99px;overflow:hidden}
