@@ -111,7 +111,9 @@ function buildSeasonQueue() {
   const pool = EVENTS.filter(e => eligible(e, S));
   const weighted = [];
   pool.forEach(e => { const w = e.w || 1; for (let i = 0; i < Math.round(w * 10); i++) weighted.push(e); });
-  const need = Math.max(0, 3 - q.length);
+  // rythme calqué sur l'original : 2 events/saison pendant la jeunesse, 1-2 ensuite
+  const target = S.age <= 22 ? 2 : RI(1, 2);
+  const need = Math.max(0, target - q.length);
   const chosen = [];
   let guard = 0;
   while (chosen.length < need && weighted.length && guard++ < 200) {
