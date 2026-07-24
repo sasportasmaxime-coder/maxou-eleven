@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>MAXOU ELEVEN — Écris ta légende, enfoiré</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💀</text></svg>">
+<style>
+:root{
+  --bg:#07070c; --card:#111118; --card2:#191922; --line:#2a2a38;
+  --txt:#e8e6df; --dim:#8a8896; --gold:#f2c14e; --red:#e3342f;
+  --green:#4ade80; --neon:#ff2d55; --blue:#5eead4;
+}
+body.light{
+  --bg:#f5f3ec; --card:#ffffff; --card2:#f1efe7; --line:#dcd7c9;
+  --txt:#1c1c22; --dim:#6d6c78; --gold:#a97a10; --red:#c81e1e;
+  --green:#15803d; --neon:#d61f45; --blue:#0f766e;
+}
+body.light .bar{background:#e7e4da}
+body.light .chip.up{border-color:#bfe3cc}
+body.light .chip.dn{color:#dc2626;border-color:#f3c2c2}
+body.light .sum-line.warn{color:#b45309}
+body.light .sum-line.bad{color:#dc2626}
+body.light .hdr{box-shadow:0 6px 20px rgba(0,0,0,.12)}
+body.light .badge.REG{background:#e2e0d6;color:#555}
+button.primary{color:#fff}
+#themeBtn{position:fixed;top:10px;right:10px;z-index:99;display:inline-block;width:auto;margin:0;
+  padding:7px 11px;border-radius:999px;font-size:1rem;line-height:1;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh}
+#app{max-width:520px;margin:0 auto;padding:14px 14px 60px}
+h1.logo{font-size:2.4rem;font-weight:900;letter-spacing:-1px;text-align:center;line-height:1;margin:30px 0 6px;
+  background:linear-gradient(135deg,var(--neon),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;text-transform:uppercase}
+.tagline{text-align:center;color:var(--dim);font-size:.95rem;margin-bottom:26px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0;animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card h2{font-size:1.05rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.card .sub{color:var(--dim);font-size:.88rem;margin-bottom:14px}
+button{display:block;width:100%;text-align:left;background:var(--card2);border:1px solid var(--line);color:var(--txt);
+  border-radius:12px;padding:13px 15px;margin:8px 0;font-size:.95rem;cursor:pointer;transition:transform .06s,border-color .12s;font-family:inherit}
+button:hover{border-color:var(--gold)}
+button:active{transform:scale(.98)}
+button .b-desc{display:block;color:var(--dim);font-size:.8rem;margin-top:3px;font-weight:400}
+button .b-fx{display:block;color:#6b6b7c;font-size:.74rem;margin-top:4px}
+button.primary{background:linear-gradient(135deg,#3d0d12,#241) ;background:linear-gradient(135deg,#4a0f16,#1a1a24);border-color:var(--neon);
+  text-align:center;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:1rem;padding:16px}
+button.ghost{text-align:center;color:var(--dim);background:none;border-style:dashed}
+.evt-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.evt-ico{font-size:1.7rem}
+.evt-cat{font-size:.78rem;letter-spacing:.15em;color:var(--gold);text-transform:uppercase;font-weight:700}
+.evt-txt{font-size:.98rem;line-height:1.5;color:var(--txt)}
+.deltas{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.chip{font-size:.8rem;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card2)}
+.chip.up{color:var(--green);border-color:#1e4d33}
+.chip.dn{color:#ff6b6b;border-color:#5b1a1a}
+/* header joueur */
+.hdr{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;position:sticky;top:8px;z-index:5;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.hdr-row1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.hdr-name{font-weight:800;font-size:1.05rem}
+.hdr-age{color:var(--dim);font-size:.8rem;white-space:nowrap}
+.hdr-row2{display:flex;justify-content:space-between;align-items:center;margin-top:6px;gap:8px;flex-wrap:wrap}
+.badge{font-size:.68rem;font-weight:800;padding:2px 7px;border-radius:6px;letter-spacing:.06em}
+.badge.REG{background:#333;color:#bbb}.badge.D2{background:#20415e;color:#9ecbff}
+.badge.D1{background:#4d3a10;color:var(--gold)}.badge.ELITE{background:#4a0f16;color:var(--neon)}
+.badge.GOLF{background:#0e4d3a;color:#59f5c0}
+.hdr-club{font-size:.9rem;font-weight:600}
+.hdr-nums{display:flex;gap:12px;align-items:center;font-size:.92rem}
+.ovr{font-weight:900;color:var(--gold)}
+.money{color:var(--green);font-weight:700}
+.stars{color:var(--gold);font-size:.8rem;letter-spacing:1px}
+.sheetbtn{width:auto;margin:0;padding:4px 10px;border-radius:8px;font-size:.9rem}
+.bars{margin-top:10px;display:grid;gap:5px}
+.bar-lab{display:flex;justify-content:space-between;font-size:.66rem;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.bar{height:6px;background:#22222e;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;transition:width .4s}
+.f-forme i{background:linear-gradient(90deg,#2dd4bf,#4ade80)}
+.f-moral i{background:linear-gradient(90deg,#818cf8,#5eead4)}
+.f-addict i{background:linear-gradient(90deg,#f2c14e,#e3342f)}
+.f-heat i{background:linear-gradient(90deg,#fb923c,#ff2d55)}
+.sheet{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;font-size:.85rem}
+.sheet .srow{display:flex;justify-content:space-between;padding:2px 0;color:var(--dim)}
+.sheet .srow b{color:var(--txt);font-weight:600}
+.sheet .meta{margin-top:8px;color:var(--dim);font-size:.78rem;line-height:1.5}
+/* résumé saison */
+.sum-head{font-size:.8rem;letter-spacing:.14em;color:var(--gold);text-transform:uppercase;font-weight:800;margin-bottom:8px}
+.presse{font-style:italic;color:var(--txt);font-size:.92rem;margin:8px 0 12px;line-height:1.45}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.g-cell{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center}
+.g-num{font-size:1.25rem;font-weight:900}
+.g-lab{font-size:.6rem;letter-spacing:.1em;color:var(--dim);text-transform:uppercase;margin-top:2px}
+.sum-line{font-size:.88rem;margin:6px 0;line-height:1.4}
+.sum-line.warn{color:#fbbf24}.sum-line.bad{color:#ff6b6b}.sum-line.good{color:var(--green)}
+.news{color:var(--dim);font-size:.8rem;font-style:italic;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+/* fin */
+.end-title{font-size:1.6rem;font-weight:900;text-align:center;margin:10px 0;text-transform:uppercase;letter-spacing:-.5px}
+.end-epitaph{text-align:center;font-style:italic;color:var(--dim);margin-bottom:16px;line-height:1.5}
+.score-big{display:flex;gap:10px}
+.score-big>div{flex:1;text-align:center;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.score-big .n{font-size:1.7rem;font-weight:900}
+.legend .n{color:var(--gold)}.crapule .n{color:var(--neon)}
+.warn18{border:1px solid var(--neon);border-radius:16px;padding:18px;text-align:center;margin-top:18vh}
+.warn18 .big{font-size:3rem}
+.footer{text-align:center;color:#55545f;font-size:.72rem;margin-top:30px;line-height:1.6}
+.trait{display:inline-block;font-size:.76rem;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:3px 9px;margin:2px 2px 0 0}
+.hof-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:.88rem}
+.badge-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.badge-card{display:flex;gap:8px;align-items:center;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:8px;font-size:.82rem}
+.badge-card.locked{opacity:.45;filter:grayscale(1)}
+.badge-ico{font-size:1.3rem}
+.tl-row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line);font-size:.86rem}
+.tl-y{font-weight:800;color:var(--gold);min-width:44px;text-align:center;line-height:1.2}
+.tl-sub{color:var(--dim);font-size:.76rem;margin-top:2px}
+.tl-ic{font-size:.95rem;min-width:30px;text-align:right}
+@media (max-width:420px){.badge-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<button id="themeBtn" title="Mode jour / nuit" onclick="toggleTheme()">☀️</button>
+<div id="app"></div>
+<script>
+function applyTheme(t) {
+  document.body.classList.toggle("light", t === "light");
+  document.getElementById("themeBtn").textContent = t === "light" ? "🌙" : "☀️";
+}
+function toggleTheme() {
+  var t = document.body.classList.contains("light") ? "dark" : "light";
+  try { localStorage.setItem("maxou_theme", t); } catch (e) {}
+  applyTheme(t);
+}
+try {
+  var _t = localStorage.getItem("maxou_theme") || "dark";
+  if (location.search.indexOf("light") >= 0) _t = "light";
+  applyTheme(_t);
+} catch (e) {}
+</script>
+<script src="data.js"></script>
+<script src="events2.js"></script>
+<script src="engine.js"></script>
+</body>
+</html>
