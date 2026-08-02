@@ -720,7 +720,7 @@ const EVENTS = [
     ]
   },
   {
-    id: "selection_first", ico: "🌍", cat: "Sélection", min: 18, max: 99, once: true, cond: (s) => s.ovrCache >= 74 && s.stats.rep >= 40, w: 3,
+    id: "selection_first", ico: "🌍", cat: "Sélection", min: 18, max: 99, once: true, cond: (s) => s.ovrCache >= 72 && s.stats.rep >= 32, w: 4,
     text: (s) => "Ton téléphone vibre. Numéro inconnu. C'est le sélectionneur : « Petit, prépare ton sac. T'es dans la liste. » Ta daronne hurle dans la cuisine.",
     choices: () => [
       { label: "Fêter ça toute la nuit", apply: () => ({ txt: "Soirée mémorable. T'arrives au rassemblement avec des lunettes de soleil en intérieur. Le staff note tout.", fx: { moral: 10, cha: 3, forme: -6, disc: -4, rep: 8 }, ctr: { cuites: 1 }, flags: { selectionnable: true } }) },

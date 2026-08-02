@@ -13,10 +13,10 @@ EVENTS.push(
     text: () => "Année de Coupe du Monde. Chaque match est une audition, chaque blessure une tragédie nationale. Les journalistes campent devant chez toi et ta boulangère donne son avis sur ta forme.",
     choices: () => [
       { label: "Se sur-entraîner comme un possédé", apply: () => chance(0.6)
-        ? { txt: "T'arrives au rassemblement affûté comme une lame. Le sélectionneur te regarde différemment.", fx: { forme: 8, phys: 3, moral: 4, disc: 3 } }
+        ? { txt: "T'arrives au rassemblement affûté comme une lame. Le sélectionneur te regarde différemment.", fx: { forme: 8, phys: 3, moral: 4, disc: 3 }, flags: { cdm_focus: 0.1 } }
         : { txt: "Trop, c'est trop. Le corps lâche à deux mois de la compét'. Course contre la montre avec les kinés.", fx: { forme: -12, moral: -8 } } },
-      { label: "Gérer tranquille, la sélection viendra", apply: () => ({ txt: "Pas de zèle, pas de blessure. Les cadors font ça depuis toujours.", fx: { mental: 3, forme: 2 } }) },
-      { label: "Couper les réseaux et disparaître", apply: () => ({ txt: "Plus de bruit, plus de pression. La presse te déclare « en dépression ». T'es juste en paix, bande de vautours.", fx: { mental: 6, moral: 4, rep: -3 } }) }
+      { label: "Gérer tranquille, la sélection viendra", apply: () => ({ txt: "Pas de zèle, pas de blessure. Les cadors font ça depuis toujours.", fx: { mental: 3, forme: 2 }, flags: { cdm_focus: 0.05 } }) },
+      { label: "Couper les réseaux et disparaître", apply: () => ({ txt: "Plus de bruit, plus de pression. La presse te déclare « en dépression ». T'es juste en paix, bande de vautours.", fx: { mental: 6, moral: 4, rep: -3 }, flags: { cdm_focus: 0.04 } }) }
     ]
   },
   {
@@ -314,6 +314,42 @@ EVENTS.push(
         ? { txt: "Le geste devient culte en 48h. Des gamins le font dans toutes les cours d'Europe. T'es entré dans la pop culture.", fx: { cha: 10, rep: 6, moral: 8 } }
         : { txt: "Un consultant y voit « un geste provocateur à caractère douteux ». Trois jours de polémique nationale pour une danse. Ce pays est fatigant.", fx: { rep: -6, cha: 3, moral: -3 } } },
       { label: "Rester sobre : doigt au ciel, merci, au revoir", apply: () => ({ txt: "Classique, propre, sans risque. Les marques familiales adorent les joueurs beiges.", fx: { rep: 2, disc: 2 } }) }
+    ]
+  }
+);
+
+// ============ GLOIRE : le rêve de gosse, vécu ============
+EVENTS.push(
+  {
+    id: "premier_but", ico: "⚽", cat: "Le premier but", min: 16, max: 19, once: true, w: 4,
+    cond: (s) => s.career.buts >= 1,
+    text: () => "Ton premier but en pro. Le ballon est dans le filet et pendant deux secondes, le stade n'existe plus. T'as 40 notifications avant même la douche. Ce ballon, il est à toi.",
+    choices: () => [
+      { label: "Offrir le ballon à ta daronne", apply: () => ({ txt: "Il trône sur le buffet du salon, entre les photos de classe et le napperon. Elle le montre à toutes ses copines. T'as gagné le vestiaire ET le quartier.", fx: { moral: 8, rep: 5, mental: 3 } }) },
+      { label: "Le faire signer par toute l'équipe", apply: () => ({ txt: "Même le gardien adverse a signé, beau joueur. Le vestiaire te chambre : « il va le vendre dans dix ans ». Ils n'ont pas totalement tort.", fx: { vest: 6, moral: 5, cha: 2 } }) },
+      { label: "Le vendre aux enchères « pour la bonne cause »", apply: () => ({ txt: "12 000 balles « pour les jeunes du quartier ». Une partie arrive vraiment aux jeunes du quartier. La com' est bonne, la conscience mitigée.", fx: { argent: 10, rep: 4, mental: -2, cha: 3 } }) }
+    ]
+  },
+  {
+    id: "retour_cdm", ico: "🇫🇷", cat: "Champion du monde", min: 16, max: 99, once: true, w: 9, cd: 0,
+    cond: (s) => !!s.flags.cdm_won,
+    text: () => "Champion du monde. L'avion se pose, un million de personnes dans les rues, ta tête en 4 par 3 sur la mairie. Le quartier a bloqué la dalle pour ton retour. Le président t'appelle par ton prénom.",
+    choices: () => [
+      { label: "Le bain de foule au quartier, d'abord", apply: () => ({ txt: "Deux heures de cortège, les darons en larmes, les petits sur les épaules. La médaille passe de main en main et revient. C'est le plus beau jour de ta vie et tout le monde le sait.", fx: { moral: 15, rep: 10, mental: 5 } }) },
+      { label: "Monétiser : sponsors, plateaux, documentaire", apply: () => ({ txt: "Trois contrats signés dans la semaine, un docu Netflix en préparation. « L'enfant du bloc devenu roi ». Les chiffres sont indécents. Toi aussi.", fx: { argent: 800, cha: 6, rep: 4, disc: -3 } }) },
+      { label: "Disparaître une semaine, téléphone éteint", apply: () => ({ txt: "Une île, personne, le silence. Tu regardes la médaille chaque matin en te demandant si c'est réel. La presse s'affole, toi tu dors enfin.", fx: { mental: 8, moral: 10, forme: 5, rep: -3 } }) }
+    ]
+  },
+  {
+    id: "bo_ceremonie", ico: "🎖️", cat: "Ballon d'Or", min: 16, max: 99, once: true, w: 9, cd: 0,
+    cond: (s) => !!s.flags.bo_won,
+    text: () => "Théâtre du Châtelet. Smoking, parterre de légendes, ta daronne au premier rang en robe neuve. On ouvre l'enveloppe : c'est toi. Trente secondes pour parler à la planète entière.",
+    choices: () => [
+      { label: "Le discours pour la daronne et le quartier", apply: () => ({ txt: "« Ce ballon, il est à ma mère et à tous les petits de la dalle. » Standing ovation, ta daronne en pleurs, le quartier en feu. Même tes haineux ont liké.", fx: { moral: 12, rep: 8, cha: 5 } }) },
+      { label: "Le clash en mondovision", apply: () => chance(0.5)
+        ? { txt: "« Certains journalistes ici présents me voyaient en D2. » Le plateau se fige, les réseaux explosent. Arrogant mais iconique : le clip fait 80 millions de vues.", fx: { cha: 10, rep: 6, moral: 8, coach: -3 } }
+        : { txt: "« On oublie pas les rats, même en smoking. » Silence gêné, ta mère te fusille du regard. Le lendemain, la presse ne parle que du malaise. Fallait préparer un texte.", fx: { rep: -8, cha: 3, moral: 4, coach: -4 } } },
+      { label: "Remercier sobrement et lever le trophée", apply: () => ({ txt: "Classe, sobre, intouchable. Les puristes saluent, les marques adorent. T'es entré dans le club des immortels sans faire de vagues.", fx: { rep: 6, disc: 4, moral: 8 } }) }
     ]
   }
 );

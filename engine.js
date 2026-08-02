@@ -104,16 +104,18 @@ function checkTraits() {
 function buildSeasonQueue() {
   const q = [];
   if (S.addiction >= 85) q.push(EVENTS.find(e => e.id === "overdose"));
-  if (S.heat >= 85) q.push(EVENTS.find(e => e.id === "proces"));
+  if (S.heat >= 78) q.push(EVENTS.find(e => e.id === "proces"));
   if (S.age === 18 && !S.style) q.push(makeStyleEvent());
   if (S.pendingMercato) { q.push(makeMercatoEvent(S.pendingMercato)); S.pendingMercato = null; }
+  if (S.age >= 17) q.push(makeSummerEvent());
   if (S.age >= 34) q.push(makeRetireEvent());
   const pool = EVENTS.filter(e => eligible(e, S));
   const weighted = [];
   pool.forEach(e => { const w = e.w || 1; for (let i = 0; i < Math.round(w * 10); i++) weighted.push(e); });
-  // rythme calqué sur l'original : 2 events/saison pendant la jeunesse, 1-2 ensuite
-  const target = S.age <= 22 ? 2 : RI(1, 2);
-  const need = Math.max(0, target - q.length);
+  // 2 events narratifs/saison en jeunesse, 1 ensuite — l'intersaison ne compte pas dans le quota
+  const target = S.age <= 20 ? 2 : 1;
+  const forcedCount = q.filter(e => e.id !== "ete_" + S.year).length;
+  const need = Math.max(0, target - forcedCount);
   const chosen = [];
   let guard = 0;
   while (chosen.length < need && weighted.length && guard++ < 200) {
@@ -134,6 +136,49 @@ function makeStyleEvent() {
       label: st.nom, desc: st.desc,
       apply: () => { S.style = st; return { txt: "C'est acté. " + st.nom + " — c'est ça, ton identité. Les défenseurs vont apprendre à te haïr comme il faut.", fx: st.fx }; }
     }))
+  };
+}
+
+// ---- intersaison : la seule décision qui t'appartient vraiment, chaque année ----
+function makeSummerEvent() {
+  const txt = S.age <= 21
+    ? "Intersaison. Six semaines sans coach, sans horaires, sans personne pour te dire non. C'est là que les carrières se construisent — ou se flinguent en silence."
+    : S.age <= 28
+      ? "Intersaison. Le corps réclame du repos, l'agent réclame des contrats, tes potes réclament Ibiza. Il va falloir choisir un camp."
+      : "Intersaison. À ton âge chaque été compte double : c'est là que les carrières se prolongent… ou s'arrêtent sans prévenir.";
+  return {
+    id: "ete_" + S.year, ico: "☀️", cat: "Intersaison",
+    text: () => txt,
+    choices: () => {
+      const c = [];
+      c.push({ label: "🏋️ Stage de forçat", desc: "Salle, diététicien, vidéo. Tu ne rentres pas au pays.",
+        apply: () => chance(0.75)
+          ? { txt: "Tu reviens taillé dans le granit. Le prépa physique te montre en exemple aux gamins.", fx: { phys: 4, forme: 14, disc: 3, moral: -4 } }
+          : { txt: "Trop de charge, trop vite : tu reprends les ischios en compote. Un été pour rien.", fx: { phys: 1, forme: -6, moral: -7 } } });
+      c.push({ label: "📸 Soigner ton image", desc: "Shooting, interviews, bonnes œuvres bien filmées.",
+        apply: () => ({ txt: "Trois campagnes et une visite d'hôpital diffusée en boucle. Les marques t'adorent, le vestiaire te chambre.", fx: { cha: 4, rep: 8, argent: 70, forme: -4 } }) });
+      c.push({ label: "🏠 Rentrer au pays", desc: "La daronne, les potes d'avant, le terrain synthétique de tes 12 ans.",
+        apply: () => ({ txt: "Personne ne te demande d'autographe au marché, juste des nouvelles. Tu repars la tête remise à l'endroit.", fx: { mental: 5, moral: 12, forme: 3 } }) });
+      c.push({ label: "🍾 Tournée : Ibiza, Mykonos, Dubaï", desc: "Yacht, magnums, gens que tu ne reverras jamais.",
+        apply: () => chance(0.55)
+          ? { txt: "Été légendaire. Tu reprends avec deux kilos en trop, zéro regret et des photos qui traînent.", fx: { moral: 14, cha: 5, forme: -10, disc: -5, addiction: RI(6, 11), heat: RI(2, 6), argent: -180 }, ctr: { cuites: RI(2, 4) } }
+          : { txt: "Une vidéo fuite. Le club « rappelle ses exigences en matière d'exemplarité ». L'amende tombe avant même la reprise.", fx: { moral: 6, cha: 3, forme: -10, disc: -8, rep: -7, addiction: RI(8, 14), heat: RI(6, 12), argent: -260 }, ctr: { cuites: RI(3, 5), amendes: 1 } } });
+      if (S.age >= 19 && (S.origine === "cite" || S.entourage === "bande")) c.push({ label: "💼 Le business des gars du bloc", desc: "Ils ont « une affaire ». Tu mets le nom et le liquide, ils gèrent.",
+        apply: () => chance(0.62)
+          ? { txt: "Ça rapporte trois fois la mise en un été, et personne ne pose de question. Trop simple pour être propre.", fx: { argent: RI(200, 420), heat: RI(9, 16), cha: 2 }, ctr: { magouilles: 1 } }
+          : { txt: "Perquisition dans les locaux au mois d'août. Ton nom est sur les statuts. Ton avocat parle déjà de « prête-nom ».", fx: { argent: -120, heat: RI(16, 26), rep: -8, moral: -7 }, ctr: { magouilles: 1, gav: 1 } } });
+      if (S.addiction >= 35) c.push({ label: "🏥 Cure au vert, en douce", desc: "Clinique discrète en Suisse. Officiellement : « repos ».",
+        apply: () => chance(0.7)
+          ? { txt: "Trois semaines coupé du monde. Tu ressors lavé, fragile, mais debout. Personne n'a rien su.", fx: { addiction: -32, forme: 8, mental: 6, moral: -5, argent: -140 } }
+          : { txt: "Un paparazzi devant le portail de la clinique. La rumeur part avant même ta sortie. Au moins t'as décroché.", fx: { addiction: -26, rep: -10, heat: 5, moral: -8, argent: -140 } } });
+      if (S.heat >= 35) c.push({ label: "⚖️ Payer les meilleurs avocats", desc: "Un cabinet à 900 €/heure pour tout faire disparaître.",
+        apply: () => chance(0.72)
+          ? { txt: "Classement sans suite, dossier enterré, communiqué tiède. La justice est lente, tes avocats non.", fx: { heat: -34, argent: -320, moral: 6 } }
+          : { txt: "Ils gagnent du temps, pas plus. Le dossier reste ouvert et la facture, elle, est bien fermée.", fx: { heat: -14, argent: -320, moral: -6 } } });
+      if (S.age >= 30) c.push({ label: "🩺 Investir dans ton corps", desc: "Cryo, ostéo, sommeil, préparateur perso. Le prix d'une saison de plus.",
+        apply: () => ({ txt: "Tu ne rajeunis pas, mais tu ralentis la chute. Chaque mois gagné vaut de l'or à ton âge.", fx: { forme: 12, phys: 3, argent: -120, moral: 4 } }) });
+      return c;
+    }
   };
 }
 
@@ -222,12 +267,16 @@ function simulateSeason() {
   const sniff = S.traits.includes("❄️ Sniffeur des surfaces") ? 1.08 : 1;
   const buts = Math.round(matchs * q * 0.75 * posG * style.g * sniff * R(0.7, 1.3));
   const passes = Math.round(matchs * q * 0.5 * posA * style.a * R(0.7, 1.3));
-  let note = matchs < 4 ? R(4.2, 5.4) : clamp(5.4 + (perf - clubLevel) * 0.05 + (buts + passes) / Math.max(matchs, 1) * 1.1, 3.8, 9.9);
+  // la note des DEF/GK se joue sur la perf, pas sur les buts — sinon jamais de grande saison pour eux
+  let note = matchs < 4 ? R(4.2, 5.4)
+    : (S.poste === "DEF" || S.poste === "GK")
+      ? clamp(5.4 + (perf - clubLevel) * 0.075 + (buts + passes) / Math.max(matchs, 1) * 0.8, 3.8, 9.9)
+      : clamp(5.4 + (perf - clubLevel) * 0.05 + (buts + passes) / Math.max(matchs, 1) * 1.1, 3.8, 9.9);
   note = Math.round(note * 10) / 10;
 
   const impact = matchs > 15 ? clamp((perf - clubLevel) * 0.25, -4, 6) : 0;
-  const teamStr = clubLevel + impact + R(-5, 7);
-  let posLg = clamp(Math.round(9 - (teamStr - clubLevel - 1) * 1.4 + R(-2.5, 2.5)), 1, 18);
+  const teamStr = clubLevel + impact + R(-6, 5);
+  let posLg = clamp(Math.round(10 - (teamStr - clubLevel) * 1.05 + R(-2.2, 2.2)), 1, 18);
   const champion = posLg === 1;
 
   const lines = [];
@@ -235,8 +284,8 @@ function simulateSeason() {
   if (champion) { S.career.titres++; trophee = true; }
   // coupe / LDC
   let coupe = false, ldc = false;
-  if (chance(0.12 + impact * 0.01)) { coupe = true; S.career.coupes++; trophee = true; }
-  if (S.tier === "ELITE" && chance(clamp(0.06 + impact * 0.02, 0.02, 0.25))) { ldc = true; S.career.ldc++; trophee = true; }
+  if (chance(clamp(0.06 + impact * 0.012, 0.02, 0.2))) { coupe = true; S.career.coupes++; trophee = true; }
+  if (S.tier === "ELITE" && chance(clamp(0.05 + impact * 0.018, 0.02, 0.22))) { ldc = true; S.career.ldc++; trophee = true; }
 
   // objectif club
   const objByTier = { ELITE: ["Ramener un trophée majeur", champion || ldc || coupe], D1: ["Finir dans le top 5", posLg <= 5], D2: ["Jouer la montée", posLg <= 3], REG: ["Monter, sortir de ce trou", posLg <= 2], GOLF: ["Faire le show pour les caméras", note >= 6.5] };
@@ -251,31 +300,46 @@ function simulateSeason() {
 
   // sélection + CDM
   let selTxt = null, cdmTxt = null, cdmWin = false;
-  if (S.flags.selectionnable && o >= 72 && S.stats.rep >= 40 && S.susp === 0) {
+  // filet de sécurité : un crack finit toujours par être appelé, même si l'event n'est jamais sorti
+  if (!S.flags.selectionnable && o >= 74 && S.stats.rep >= 35 && S.susp === 0) {
+    S.flags.selectionnable = true;
+    lines.push({ t: "🌍 Un mardi, numéro inconnu : le sélectionneur. T'es dans la liste. Ta daronne a prévenu tout l'immeuble.", c: "good" });
+  }
+  if (S.flags.selectionnable && o >= 70 && S.stats.rep >= 30 && S.susp === 0) {
     const caps = RI(3, 8);
     S.career.selections += caps;
     selTxt = "🌍 " + caps + " capes avec la sélection cette saison.";
     if ((S.year - 2026) % 4 === 0 && S.year > 2026) {
+      const boost = S.flags.cdm_focus || 0;
+      S.flags.cdm_focus = 0;
+      const pWin = clamp(0.10 + (o - 74) * 0.008 + boost, 0.04, 0.35);
       const run = Math.random();
-      if (run < 0.12) { S.career.cdm++; cdmWin = true; cdmTxt = "🏆 CHAMPION DU MONDE. Ton nom est gravé à jamais, fils de légende."; applyFxRaw({ rep: 25, moral: 15, cha: 5 }); }
-      else if (run < 0.4) { cdmTxt = "🌍 Coupe du Monde : demi-finale. Le pays a pleuré, mais t'as fait rêver."; applyFxRaw({ rep: 10, moral: -3 }); }
+      if (run < pWin) { S.career.cdm++; cdmWin = true; S.flags.cdm_won = true; cdmTxt = "🏆 CHAMPION DU MONDE. Ton nom est gravé à jamais, fils de légende."; applyFxRaw({ rep: 25, moral: 15, cha: 5 }); }
+      else if (run < pWin + 0.28) { cdmTxt = "🌍 Coupe du Monde : demi-finale. Le pays a pleuré, mais t'as fait rêver."; applyFxRaw({ rep: 10, moral: -3 }); }
       else { cdmTxt = "🌍 Coupe du Monde : élimination gênante. Retour du pays en soute, avec les valises."; applyFxRaw({ rep: -4, moral: -6 }); }
     }
   }
 
-  // Ballon d'Or
+  // Ballon d'Or — chaque poste a son barème ; une CDM gagnée avec une grosse saison le débloque aussi
   let boTxt = null;
-  if (S.poste !== "GK" && buts + passes >= 45 && (champion || ldc) && note >= 8) {
+  const ga = buts + passes;
+  const boOk =
+    S.poste === "ATT" ? (ga >= 35 && note >= 8 && (champion || ldc)) :
+    S.poste === "MIL" ? (ga >= 20 && note >= 7.9 && (champion || ldc)) :
+    S.poste === "DEF" ? (note >= 8.2 && (champion || ldc)) :
+    (note >= 8.3 && (champion || ldc));
+  if (boOk || (cdmWin && note >= 7.6)) {
     S.career.bo++;
+    S.flags.bo_won = true;
     boTxt = "🎖️ BALLON D'OR. Smoking, discours, larmes de ta daronne au premier rang.";
     applyFxRaw({ rep: 30, cha: 8, moral: 15, argent: 500 });
   }
 
   // contrôle antidopage
   let dopTxt = null;
-  if (S.addiction > 15 && chance(S.addiction / 260)) {
+  if (S.addiction > 20 && chance(S.addiction / 400)) {
     S.dopagePris++;
-    if (S.dopagePris >= 2) { S.ended = "banni_dopage"; dopTxt = "🧪 Deuxième contrôle positif. Radiation à vie."; }
+    if (S.dopagePris >= 3) { S.ended = "banni_dopage"; dopTxt = "🧪 Troisième contrôle positif. Radiation à vie, sans appel."; }
     else { S.susp = 1; dopTxt = "🧪 CONTRÔLE POSITIF. Suspension, une de la presse, sponsors en fuite. La honte nationale."; applyFxRaw({ rep: -20, moral: -10, argent: -100 }); }
   } else if (S.susp > 0) S.susp = 0;
 
@@ -293,8 +357,17 @@ function simulateSeason() {
   if (S.injury) { lines.push({ t: "🏥 Saison plombée par la blessure. L'infirmerie connaît ta playlist par cœur.", c: "bad" }); S.injury = false; applyFxRaw({ forme: 15 }); }
   if (note >= 7.5) applyFxRaw({ moral: 6, rep: 6 });
   if (note < 5.5 && matchs >= 10) applyFxRaw({ moral: -5, rep: -3, coach: -4 });
-  S.heat = clamp(S.heat - 4, 0, 100);
-  if (S.addiction >= 30) applyFxRaw({ addiction: RI(2, 6), forme: -3 });
+  // le judiciaire s'apaise avec le temps mais ne s'efface jamais tout seul
+  S.heat = clamp(Math.round(S.heat * 0.93), 0, 100);
+  // spirale : elle s'entretient au-delà de 20, et s'emballe au-delà de 50
+  if (S.addiction >= 50) applyFxRaw({ addiction: RI(5, 11), forme: -6 });
+  else if (S.addiction >= 20) applyFxRaw({ addiction: RI(2, 7), forme: -3 });
+  // ---- signaux d'alerte : le drame s'annonce avant de tomber ----
+  if (S.addiction >= 70) lines.push({ t: "💀 Le doc du club t'a pris à part : « Ton bilan sanguin, c'est plus une analyse, c'est un rapport de police. » Tu tiens sur des rails.", c: "bad" });
+  else if (S.addiction >= 45) lines.push({ t: "⚠️ Deux mecs du vestiaire ont parlé au préparateur physique. On te regarde autrement, le lundi matin.", c: "warn" });
+  else if (S.addiction >= 25) lines.push({ t: "⚠️ Tu comptes les jours entre deux soirées. Personne n'a rien dit. Pour l'instant.", c: "warn" });
+  if (S.heat >= 70) lines.push({ t: "💀 Ton avocat n'appelle plus « pour discuter » mais « pour préparer ». Le juge d'instruction connaît ton prénom par cœur.", c: "bad" });
+  else if (S.heat >= 45) lines.push({ t: "⚠️ Un journaliste d'investigation a appelé trois de tes proches cette semaine. Il ne prépare pas un portrait flatteur.", c: "warn" });
   growPlayer();
   checkTraits();
 
@@ -474,6 +547,25 @@ function esc(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
 function starsTxt(n) { return "★".repeat(n) + "☆".repeat(5 - n); }
 
+// Niveau de danger d'un choix, déduit du code de son apply() sans l'exécuter.
+// 0 = sûr · 1 = risqué · 2 = danger. Mémoïsé sur le choix lui-même.
+function riskOf(ch) {
+  if (ch._risk != null) return ch._risk;
+  const src = String(ch.apply || "");
+  const sum = (re) => (src.match(re) || []).reduce((a, m) => a + (parseInt(m.replace(/\D+/g, ""), 10) || 0), 0);
+  const toxic = sum(/addiction\s*:\s*(?:RI\(\s*)?\d+/g) + sum(/\bheat\s*:\s*(?:RI\(\s*)?\d+/g);
+  const maluses = (src.match(/:\s*-\d+/g) || []).map(m => parseInt(m.replace(/\D/g, ""), 10));
+  const worst = maluses.length ? Math.max.apply(null, maluses) : 0;
+  const gamble = /chance\(/.test(src);
+  let r;
+  if (/\bend\s*:/.test(src) || toxic >= 8 || /injury\s*:\s*true|\bsusp\s*:\s*[1-9]|gav\s*:\s*[1-9]/.test(src)) r = 2;
+  else if (toxic > 0 || (gamble && maluses.length) || worst >= 10) r = 1;
+  else r = 0;
+  ch._risk = r;
+  return r;
+}
+const RISK_TAG = ['<span class="risk safe">Sûr</span>', '<span class="risk risky">Risqué</span>', '<span class="risk deadly">Danger</span>'];
+
 function htmlHeader() {
   const o = ovr();
   const arrow = S._lastOvr != null && o !== S._lastOvr ? (o > S._lastOvr ? " ▲" : " ▼") : "";
@@ -483,15 +575,25 @@ function htmlHeader() {
   const cc = clubColors(S.club);
   const sLen = S.seasonLen || (S.queue.length + 1);
   const sProg = clamp(Math.round((sLen - S.queue.length) / sLen * 100), 5, 100);
-  const gauge = (cls, lab, v) => '<div class="gauge"><span class="g-glab">' + lab + '</span><div class="bar ' + cls + '"><i style="width:' + v + '%"></i></div><span class="g-gval">' + Math.round(v) + '</span></div>';
+  const gauge = (cls, lab, v, danger) => '<div class="gauge' + (danger && v >= 70 ? " critique" : danger && v >= 45 ? " alerte" : "") + '">' +
+    '<span class="g-glab">' + lab + '</span><div class="bar ' + cls + '"><i style="width:' + v + '%"></i></div>' +
+    '<span class="g-gval">' + Math.round(v) + '</span></div>';
   let gauges = gauge("f-forme", "Forme", S.forme) + gauge("f-moral", "Moral", S.moral);
-  if (S.addiction > 0) gauges += gauge("f-addict", "❄️ Défonce", S.addiction);
-  if (S.heat > 0) gauges += gauge("f-heat", "🚨 Judiciaire", S.heat);
+  if (S.addiction > 0) gauges += gauge("f-addict", "❄️ Défonce", S.addiction, true);
+  if (S.heat > 0) gauges += gauge("f-heat", "🚨 Judiciaire", S.heat, true);
   let sheet = "";
   if (S.ui_sheet) {
     const st = S.stats;
     const rows = [["Technique", st.tech], ["Physique", st.phys], ["Mental", st.mental], ["Charisme", st.cha], ["Réputation", st.rep], ["Discipline", st.disc], ["Relation coach", st.coach], ["Vestiaire", st.vest]];
-    sheet = '<div class="sheet">' + rows.map(r => '<div class="srow"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>').join("") +
+    // repère : le niveau moyen d'un joueur du même âge, pour situer chaque stat d'un coup d'œil
+    const avg = clamp(Math.round(42 + (S.age - 16) * 1.5), 42, 62);
+    sheet = '<div class="sheet">' + rows.map(r => {
+      const cls = r[1] >= avg + 8 ? " good" : r[1] <= avg - 8 ? " bad" : "";
+      return '<div class="st"><span class="st-n">' + r[0] + '</span>' +
+        '<span class="st-b' + cls + '" style="--avg:' + avg + '%"><i style="width:' + r[1] + '%"></i></span>' +
+        '<b class="st-v">' + r[1] + '</b></div>';
+    }).join("") +
+      '<div class="st-legend"><i></i> Repère : moyenne d\'un joueur de ' + S.age + ' ans</div>' +
       '<div class="meta">Potentiel estimé : ' + starsTxt(S.potShown) + ' · Contrat : ' + fmtMoney(S.contract.salary) + '/an, ' + Math.max(0, S.contract.years) + ' an(s)' +
       (S.style ? '<br>🧬 ' + esc(S.style.nom) + ' — buts ×' + S.style.g + ' · passes ×' + S.style.a : "") +
       (S.traits.length ? '<br>' + S.traits.map(t => '<span class="trait">' + esc(t) + '</span>').join("") : '<br><span style="color:var(--dim)">Aucun trait débloqué. Pour l\'instant t\'es personne.</span>') +
@@ -524,7 +626,8 @@ function renderEvent(ev) {
   app.innerHTML = htmlHeader() +
     '<div class="card evt"><div class="evt-head"><span class="evt-ico">' + ev.ico + '</span><span class="evt-cat">' + esc(ev.cat) + ' · ' + S.age + ' ans</span></div>' +
     '<p class="evt-txt">' + esc(ev.text(S)) + '</p><div style="margin-top:14px">' +
-    choices.map((c, i) => '<button onclick="uiChoose(' + i + ')">' + esc(c.label) + (c.desc ? '<span class="b-desc">' + esc(c.desc) + '</span>' : '') + '</button>').join("") +
+    choices.map((c, i) => '<button class="ch" onclick="uiChoose(' + i + ')">' + RISK_TAG[riskOf(c)] +
+      '<span class="ch-t">' + esc(c.label) + '</span>' + (c.desc ? '<span class="b-desc">' + esc(c.desc) + '</span>' : '') + '</button>').join("") +
     '</div></div>';
   window._choices = choices; window._ev = ev;
   window.scrollTo(0, 0);
