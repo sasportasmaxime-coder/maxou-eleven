@@ -123,6 +123,7 @@ function buildSeasonQueue() {
   q.push(...chosen);
   q.push({ kind: "season" });
   S.queue = q;
+  S.seasonLen = q.length;
 }
 
 function makeStyleEvent() {
@@ -477,10 +478,15 @@ function htmlHeader() {
   const o = ovr();
   const arrow = S._lastOvr != null && o !== S._lastOvr ? (o > S._lastOvr ? " ▲" : " ▼") : "";
   S._lastOvr = o;
-  const bar = (cls, lab, v) => '<div><div class="bar-lab"><span>' + lab + '</span><span>' + Math.round(v) + '</span></div><div class="bar ' + cls + '"><i style="width:' + v + '%"></i></div></div>';
-  let bars = bar("f-forme", "Forme", S.forme) + bar("f-moral", "Moral", S.moral);
-  if (S.addiction > 0) bars += bar("f-addict", "❄️ Défonce", S.addiction);
-  if (S.heat > 0) bars += bar("f-heat", "🚨 Problème judiciaire", S.heat);
+  const flag = (PAYS.find(p => p.id === S.pays) || {}).flag || "";
+  const pIco = (POSTES.find(p => p.id === S.poste) || {}).ico || "⚡";
+  const cc = clubColors(S.club);
+  const sLen = S.seasonLen || (S.queue.length + 1);
+  const sProg = clamp(Math.round((sLen - S.queue.length) / sLen * 100), 5, 100);
+  const gauge = (cls, lab, v) => '<div class="gauge"><span class="g-glab">' + lab + '</span><div class="bar ' + cls + '"><i style="width:' + v + '%"></i></div><span class="g-gval">' + Math.round(v) + '</span></div>';
+  let gauges = gauge("f-forme", "Forme", S.forme) + gauge("f-moral", "Moral", S.moral);
+  if (S.addiction > 0) gauges += gauge("f-addict", "❄️ Défonce", S.addiction);
+  if (S.heat > 0) gauges += gauge("f-heat", "🚨 Judiciaire", S.heat);
   let sheet = "";
   if (S.ui_sheet) {
     const st = S.stats;
@@ -488,15 +494,24 @@ function htmlHeader() {
     sheet = '<div class="sheet">' + rows.map(r => '<div class="srow"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>').join("") +
       '<div class="meta">Potentiel estimé : ' + starsTxt(S.potShown) + ' · Contrat : ' + fmtMoney(S.contract.salary) + '/an, ' + Math.max(0, S.contract.years) + ' an(s)' +
       (S.style ? '<br>🧬 ' + esc(S.style.nom) + ' — buts ×' + S.style.g + ' · passes ×' + S.style.a : "") +
-      (S.traits.length ? '<br>' + S.traits.map(t => '<span class="trait">' + esc(t) + '</span>').join("") : '<br><span style="color:#55545f">Aucun trait débloqué. Pour l\'instant t\'es personne.</span>') +
+      (S.traits.length ? '<br>' + S.traits.map(t => '<span class="trait">' + esc(t) + '</span>').join("") : '<br><span style="color:var(--dim)">Aucun trait débloqué. Pour l\'instant t\'es personne.</span>') +
       '</div></div>';
   }
   return '<div class="hdr">' +
-    '<div class="hdr-row1"><span class="hdr-name">' + esc(S.nom) + '</span><span class="hdr-age">' + S.age + ' ans · ' + S.year + '</span></div>' +
-    '<div class="hdr-row2"><span><span class="badge ' + S.tier + '">' + S.tier + '</span> <span class="hdr-club">' + esc(S.club) + '</span></span>' +
-    '<span class="hdr-nums"><span class="ovr">⚡ ' + o + arrow + '</span><span class="money">' + fmtMoney(S.argent) + '</span><span class="stars">' + starsTxt(S.potShown) + '</span>' +
-    '<button class="sheetbtn" onclick="toggleSheet()">📋</button></span></div>' +
-    '<div class="bars">' + bars + '</div>' + sheet + '</div>';
+    '<div class="hdr-pill">' +
+    '<span class="hdr-name">' + flag + ' ' + esc(S.nom) + '</span>' +
+    '<span class="hdr-age">' + S.age + ' ans · ' + S.year + '</span>' +
+    '<span class="hdr-clubwrap"><span class="badge ' + S.tier + '">' + S.tier + '</span><span class="hdr-club">' + esc(S.club) + '</span>' +
+    '<span class="club-dots"><i style="background:' + cc[0] + '"></i><i style="background:' + cc[1] + '"></i></span></span>' +
+    '</div>' +
+    '<div class="hdr-chips">' +
+    '<span class="chip-ovr">' + pIco + ' ' + o + arrow + '</span>' +
+    '<span class="chip-white money">' + fmtMoney(S.argent) + '</span>' +
+    '<span class="chip-white stars">' + starsTxt(S.potShown) + '</span>' +
+    '<button class="sheetbtn" onclick="toggleSheet()">📋</button>' +
+    '</div>' +
+    '<div class="gauges">' + gauges + '</div>' +
+    '<div class="season-track"><i style="width:' + sProg + '%"></i></div>' + sheet + '</div>';
 }
 function toggleSheet() { S.ui_sheet = !S.ui_sheet; rerenderCurrent(); }
 let _current = null;
@@ -507,7 +522,7 @@ function renderEvent(ev) {
   if (TESTMODE) { const out = resolveChoice(ev, pick(choices)); afterResultTest(out); return; }
   _current = () => renderEvent(ev);
   app.innerHTML = htmlHeader() +
-    '<div class="card"><div class="evt-head"><span class="evt-ico">' + ev.ico + '</span><span class="evt-cat">' + esc(ev.cat) + ' · ' + S.age + ' ans</span></div>' +
+    '<div class="card evt"><div class="evt-head"><span class="evt-ico">' + ev.ico + '</span><span class="evt-cat">' + esc(ev.cat) + ' · ' + S.age + ' ans</span></div>' +
     '<p class="evt-txt">' + esc(ev.text(S)) + '</p><div style="margin-top:14px">' +
     choices.map((c, i) => '<button onclick="uiChoose(' + i + ')">' + esc(c.label) + (c.desc ? '<span class="b-desc">' + esc(c.desc) + '</span>' : '') + '</button>').join("") +
     '</div></div>';
@@ -520,10 +535,12 @@ function uiChoose(i) {
 }
 function renderResult(out) {
   _current = () => renderResult(out);
-  const chips = out.deltas.map(d => '<span class="chip ' + (d.v > 0 === (d.k !== "addiction" && d.k !== "heat") ? "up" : "dn") + '">' +
-    (d.v > 0 ? "+" : "") + (d.k === "argent" ? fmtMoney(d.v) : d.v + " " + (LBL[d.k] || d.k)) + '</span>').join("");
+  const chips = out.deltas.map(d => {
+    const cls = d.k === "argent" ? (d.v > 0 ? "gold" : "dn") : (d.v > 0 === (d.k !== "addiction" && d.k !== "heat") ? "up" : "dn");
+    return '<span class="chip ' + cls + '">' + (d.v > 0 ? "+" : "") + (d.k === "argent" ? fmtMoney(d.v) : d.v + " " + (LBL[d.k] || d.k)) + '</span>';
+  }).join("");
   app.innerHTML = htmlHeader() +
-    '<div class="card"><div class="evt-head"><span class="evt-ico">' + out.ev.ico + '</span><span class="evt-cat">' + esc(out.ev.cat) + '</span></div>' +
+    '<div class="card evt"><div class="evt-head"><span class="evt-ico">' + out.ev.ico + '</span><span class="evt-cat">' + esc(out.ev.cat) + '</span></div>' +
     '<p class="evt-txt">' + esc(out.res.txt) + '</p>' +
     (chips ? '<div class="deltas">' + chips + '</div>' : '') +
     '<button class="primary" style="margin-top:16px" onclick="step()">CONTINUER</button></div>';
@@ -535,7 +552,7 @@ function renderSummary(sum) {
   saveGame(sum);
   _current = () => renderSummary(sum);
   const cell = (n, l) => '<div class="g-cell"><div class="g-num">' + n + '</div><div class="g-lab">' + l + '</div></div>';
-  let html = htmlHeader() + '<div class="card">' +
+  let html = htmlHeader() + '<div class="card evt">' +
     '<div class="sum-head">📊 Saison ' + (S.year) + '-' + String(S.year + 1).slice(2) + ' · ' + esc(S.club) + '</div>' +
     '<p class="presse">📰 ' + esc(sum.presse) + '</p>' +
     '<div class="grid4">' + cell(sum.matchs, "matchs") + cell(sum.buts, "buts") + cell(sum.passes, "passes") + cell(sum.note, "note") + '</div>' +
@@ -597,7 +614,7 @@ function renderEnd() {
 const CFG = {};
 function renderGate() {
   app.innerHTML = '<div class="warn18"><div class="big">🔞</div>' +
-    '<h1 class="logo">Maxou Eleven</h1>' +
+    '<h1 class="logo">Maxou Ele<em>11</em>en</h1>' +
     '<p class="tagline">Drogue, cul, fric sale et langage de chantier.<br>Une parodie de fiction réservée aux adultes.</p>' +
     '<button class="primary" onclick="renderHome()">J\'AI 18 ANS ET JE SUIS COQUIN</button>' +
     '<button class="ghost" onclick="window.location=\'https://www.google.com\'">Je suis un enfant innocent, sortez-moi de là</button></div>';
@@ -611,11 +628,11 @@ function renderHome() {
   const resumeBtn = (sv && sv.S && !sv.S.ended)
     ? '<button class="primary" onclick="resumeGame()">⏯️ REPRENDRE — ' + esc(sv.S.nom) + ', ' + sv.S.age + ' ans, ' + esc(sv.S.club) + '</button>'
     : "";
-  app.innerHTML = '<h1 class="logo">Maxou Eleven</h1>' +
+  app.innerHTML = '<h1 class="logo">Maxou Ele<em>11</em>en</h1>' +
     '<p class="tagline">De 16 ans à la tombe, écris ta légende de crapule.<br>Chaque choix compte. Surtout les pires.</p>' +
     '<div class="card">' + resumeBtn +
     '<button class="' + (resumeBtn ? "" : "primary") + '" style="text-align:center" onclick="renderPays()">' + (resumeBtn ? "Nouvelle carrière (écrase la sauvegarde)" : "COMMENCER MA CARRIÈRE") + '</button>' +
-    '<p style="color:#55545f;font-size:.78rem;text-align:center;margin-top:10px">' + record + '</p></div>' +
+    '<p style="color:var(--dim);font-size:.78rem;text-align:center;margin-top:10px">' + record + '</p></div>' +
     '<div class="card" style="display:flex;gap:8px;padding:12px">' +
     '<button style="margin:0;text-align:center" onclick="renderHof()">🏛️ Panthéon</button>' +
     '<button style="margin:0;text-align:center" onclick="renderBadges()">🎖️ Badges ' + nbBadges + '/' + BADGES.length + '</button>' +

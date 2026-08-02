@@ -5,139 +5,188 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>MAXOU ELEVEN — Écris ta légende, enfoiré</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💀</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#07070c; --card:#111118; --card2:#191922; --line:#2a2a38;
-  --txt:#e8e6df; --dim:#8a8896; --gold:#f2c14e; --red:#e3342f;
-  --green:#4ade80; --neon:#ff2d55; --blue:#5eead4;
+  --radius:16px;
+  --font:'Poppins','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --font-display:'Oswald','Arial Narrow','Segoe UI',sans-serif;
+  --green:#087b4b; --green-deep:#065f3a; --green-ink:#0b3b26;
+  --gold:#c9971c; --gold-bright:#e8c34a; --gold-deep:#9a6a0b;
+  --red:#d6483d; --cream:#faecc9; --blue:#2f6fd6;
+  --card-bg:#ffffff; --card-bg-2:#f4f7f3;
+  --text-0:#1c2a21; --text-1:#46584c; --text-2:#74857a;
+  --good:#23875a; --bad:#c1473b; --warn:#b06a10; --money:#96751a;
+  --panel:rgba(8,123,75,.06); --panel-2:rgba(8,123,75,.12);
+  --line:rgba(20,45,30,.13); --line-strong:rgba(20,45,30,.24);
+  --shadow:rgba(3,36,21,.3);
+  --on-green:#ffffff; --on-green-soft:rgba(255,255,255,.88); --on-green-faint:rgba(255,255,255,.62);
+  /* alias pour le code du moteur qui référence var(--dim)/var(--gold)/var(--neon) */
+  --dim:var(--text-2); --neon:var(--red);
 }
-body.light{
-  --bg:#f5f3ec; --card:#ffffff; --card2:#f1efe7; --line:#dcd7c9;
-  --txt:#1c1c22; --dim:#6d6c78; --gold:#a97a10; --red:#c81e1e;
-  --green:#15803d; --neon:#d61f45; --blue:#0f766e;
-}
-body.light .bar{background:#e7e4da}
-body.light .chip.up{border-color:#bfe3cc}
-body.light .chip.dn{color:#dc2626;border-color:#f3c2c2}
-body.light .sum-line.warn{color:#b45309}
-body.light .sum-line.bad{color:#dc2626}
-body.light .hdr{box-shadow:0 6px 20px rgba(0,0,0,.12)}
-body.light .badge.REG{background:#e2e0d6;color:#555}
-button.primary{color:#fff}
-#themeBtn{position:fixed;top:auto;bottom:calc(14px + env(safe-area-inset-bottom));right:14px;z-index:99;
-  width:46px;height:46px;margin:0;padding:0;border-radius:999px;font-size:1.25rem;line-height:46px;text-align:center;
-  box-shadow:0 4px 14px rgba(0,0,0,.4)}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
-body{min-height:100vh}
+html{background:var(--green)}
+html,body{color:var(--text-0);font-family:var(--font);-webkit-font-smoothing:antialiased}
+body{min-height:100vh;background:transparent}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    linear-gradient(160deg,rgba(255,255,255,.06),rgba(0,0,0,.06)),
+    repeating-linear-gradient(115deg,
+      rgba(0,0,0,.05) 0 150px, rgba(0,0,0,0) 150px 300px,
+      rgba(255,255,255,.035) 300px 450px, rgba(0,0,0,0) 450px 600px);
+}
 #app{max-width:520px;margin:0 auto;padding:14px 14px 90px;
   padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));
   padding-top:max(14px,env(safe-area-inset-top))}
-h1.logo{font-size:2.4rem;font-weight:900;letter-spacing:-1px;text-align:center;line-height:1;margin:30px 0 6px;
-  background:linear-gradient(135deg,var(--neon),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;text-transform:uppercase}
-.tagline{text-align:center;color:var(--dim);font-size:.95rem;margin-bottom:26px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0;animation:pop .25s ease}
+pre{color:var(--on-green);padding:14px;font-size:.8rem;white-space:pre-wrap}
+
+/* ---------- logo & titres sur pelouse ---------- */
+h1.logo{font-family:var(--font);font-size:2.5rem;font-weight:800;letter-spacing:-.01em;text-align:center;line-height:1;
+  margin:30px 0 6px;color:var(--on-green);text-shadow:0 2px 12px rgba(3,36,21,.35)}
+h1.logo em{font-style:normal;background:linear-gradient(180deg,var(--gold-bright),var(--gold));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.tagline{text-align:center;color:var(--on-green-soft);font-size:.95rem;font-weight:600;margin-bottom:26px}
+.footer{text-align:center;color:var(--on-green-faint);font-size:.72rem;margin-top:30px;line-height:1.6}
+
+/* ---------- cartes ---------- */
+.card{background:var(--card-bg);border-radius:var(--radius);padding:22px 20px;margin:14px 0;
+  box-shadow:0 12px 30px var(--shadow);animation:pop .25s ease}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.card h2{font-size:1.05rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
-.card .sub{color:var(--dim);font-size:.88rem;margin-bottom:14px}
-button{display:block;width:100%;text-align:left;background:var(--card2);border:1px solid var(--line);color:var(--txt);
-  border-radius:12px;padding:13px 15px;margin:8px 0;font-size:.95rem;cursor:pointer;transition:transform .06s,border-color .12s;font-family:inherit;
-  touch-action:manipulation;-webkit-tap-highlight-color:rgba(255,45,85,.18)}
-button:hover{border-color:var(--gold)}
+.card h2{font-family:var(--font-display);font-size:1.25rem;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--green);margin-bottom:4px}
+.card .sub{color:var(--text-2);font-size:.88rem;margin-bottom:14px}
+.card.evt{border:2px solid #aac4ee;box-shadow:0 12px 30px var(--shadow),0 0 0 4px rgba(95,138,214,.14)}
+.card.evt button.primary{background:var(--card-bg);color:var(--green-deep);box-shadow:0 8px 18px rgba(3,36,21,.22)}
+.card.evt button.primary:hover{background:#f4f8f4}
+
+/* ---------- boutons ---------- */
+button{display:block;width:100%;text-align:left;background:var(--card-bg-2);border:1.5px solid var(--line);
+  color:var(--text-0);border-radius:12px;padding:13px 15px;margin:8px 0;font-size:.92rem;font-weight:600;
+  cursor:pointer;transition:transform .06s,border-color .12s,background .12s;font-family:var(--font);
+  touch-action:manipulation;-webkit-tap-highlight-color:rgba(8,123,75,.15)}
+button:hover{border-color:var(--gold);background:#fff}
 button:active{transform:scale(.98)}
-button .b-desc{display:block;color:var(--dim);font-size:.8rem;margin-top:3px;font-weight:400}
-button .b-fx{display:block;color:#6b6b7c;font-size:.74rem;margin-top:4px}
-button.primary{background:linear-gradient(135deg,#3d0d12,#241) ;background:linear-gradient(135deg,#4a0f16,#1a1a24);border-color:var(--neon);
-  text-align:center;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:1rem;padding:16px}
-button.ghost{text-align:center;color:var(--dim);background:none;border-style:dashed}
+button .b-desc{display:block;color:var(--text-2);font-size:.8rem;margin-top:3px;font-weight:400}
+button .b-fx{display:block;color:var(--money);font-size:.74rem;margin-top:4px;font-weight:600}
+button.primary{background:var(--green);border:none;color:#fff;text-align:center;
+  font-family:var(--font-display);font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  font-size:1.02rem;padding:15px;border-radius:13px;box-shadow:0 6px 16px rgba(3,36,21,.25)}
+button.primary:hover{background:var(--green-deep)}
+button.ghost{text-align:center;color:var(--text-2);background:none;border:1.5px dashed var(--line-strong);font-weight:400}
+button.ghost:hover{border-color:var(--line-strong);background:var(--card-bg-2)}
+
+/* ---------- événements ---------- */
 .evt-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .evt-ico{font-size:1.7rem}
-.evt-cat{font-size:.78rem;letter-spacing:.15em;color:var(--gold);text-transform:uppercase;font-weight:700}
-.evt-txt{font-size:.98rem;line-height:1.5;color:var(--txt)}
-.deltas{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
-.chip{font-size:.8rem;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card2)}
-.chip.up{color:var(--green);border-color:#1e4d33}
-.chip.dn{color:#ff6b6b;border-color:#5b1a1a}
-/* header joueur */
-.hdr{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;position:sticky;top:8px;z-index:5;box-shadow:0 6px 24px rgba(0,0,0,.5)}
-.hdr-row1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.hdr-name{font-weight:800;font-size:1.05rem}
-.hdr-age{color:var(--dim);font-size:.8rem;white-space:nowrap}
-.hdr-row2{display:flex;justify-content:space-between;align-items:center;margin-top:6px;gap:8px;flex-wrap:wrap}
-.badge{font-size:.68rem;font-weight:800;padding:2px 7px;border-radius:6px;letter-spacing:.06em}
-.badge.REG{background:#333;color:#bbb}.badge.D2{background:#20415e;color:#9ecbff}
-.badge.D1{background:#4d3a10;color:var(--gold)}.badge.ELITE{background:#4a0f16;color:var(--neon)}
-.badge.GOLF{background:#0e4d3a;color:#59f5c0}
-.hdr-club{font-size:.9rem;font-weight:600}
-.hdr-nums{display:flex;gap:12px;align-items:center;font-size:.92rem}
-.ovr{font-weight:900;color:var(--gold)}
-.money{color:var(--green);font-weight:700}
+.evt-cat{font-family:var(--font-display);font-size:.82rem;letter-spacing:.08em;color:var(--text-2);
+  text-transform:uppercase;font-weight:600}
+.evt-txt{font-size:.95rem;line-height:1.55;color:var(--text-0)}
+.deltas{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.chip{font-size:.82rem;font-weight:700;padding:5px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--card-bg-2)}
+.chip.up{color:var(--good);border-color:rgba(35,135,90,.5);background:rgba(35,135,90,.07)}
+.chip.dn{color:var(--bad);border-color:rgba(193,71,59,.5);background:rgba(193,71,59,.07)}
+.chip.gold{color:var(--money);border-color:rgba(201,151,28,.55);background:rgba(232,195,74,.12)}
+
+/* ---------- header joueur : pill + chips + jauges sur le gazon ---------- */
+.hdr{margin:2px 0 18px}
+.hdr-pill{display:flex;justify-content:space-between;align-items:center;gap:6px 12px;flex-wrap:wrap;
+  background:var(--card-bg);border-radius:999px;padding:12px 18px;box-shadow:0 10px 24px var(--shadow)}
+.hdr-name{font-weight:700;font-size:.98rem}
+.hdr-age{color:var(--text-2);font-size:.8rem;white-space:nowrap;font-weight:700}
+.hdr-clubwrap{display:flex;align-items:center;gap:6px}
+.badge{font-family:var(--font-display);font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:6px;
+  letter-spacing:.06em;color:#fff}
+.badge.REG{background:#7e8b82}.badge.D2{background:#3d8a7a}
+.badge.D1{background:var(--blue)}.badge.ELITE{background:var(--gold)}
+.badge.GOLF{background:#0e8f66}
+.hdr-club{font-size:.9rem;font-weight:700}
+.club-dots{display:inline-flex;gap:3px;margin-left:2px}
+.club-dots i{width:11px;height:11px;border-radius:50%;border:1.5px solid rgba(20,45,30,.18)}
+.hdr-chips{display:flex;gap:8px;margin-top:10px}
+.chip-ovr,.chip-white{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;
+  border-radius:14px;padding:10px 8px;font-weight:700;font-size:.95rem;box-shadow:0 8px 20px rgba(3,36,21,.2)}
+.chip-ovr{background:linear-gradient(180deg,#fbf0cd,#f3dfa2);color:var(--gold-deep);font-family:var(--font-display)}
+.chip-white{background:var(--card-bg)}
+.money{color:var(--money);font-weight:700}
 .stars{color:var(--gold);font-size:.8rem;letter-spacing:1px}
-.sheetbtn{width:auto;margin:0;padding:0 12px;min-height:40px;min-width:46px;border-radius:10px;font-size:1rem}
-.bars{margin-top:10px;display:grid;gap:5px}
-.bar-lab{display:flex;justify-content:space-between;font-size:.66rem;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
-.bar{height:6px;background:#22222e;border-radius:99px;overflow:hidden}
-.bar i{display:block;height:100%;border-radius:99px;transition:width .4s}
-.f-forme i{background:linear-gradient(90deg,#2dd4bf,#4ade80)}
-.f-moral i{background:linear-gradient(90deg,#818cf8,#5eead4)}
-.f-addict i{background:linear-gradient(90deg,#f2c14e,#e3342f)}
-.f-heat i{background:linear-gradient(90deg,#fb923c,#ff2d55)}
-.sheet{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;font-size:.85rem}
-.sheet .srow{display:flex;justify-content:space-between;padding:2px 0;color:var(--dim)}
-.sheet .srow b{color:var(--txt);font-weight:600}
-.sheet .meta{margin-top:8px;color:var(--dim);font-size:.78rem;line-height:1.5}
-/* résumé saison */
-.sum-head{font-size:.8rem;letter-spacing:.14em;color:var(--gold);text-transform:uppercase;font-weight:800;margin-bottom:8px}
-.presse{font-style:italic;color:var(--txt);font-size:.92rem;margin:8px 0 12px;line-height:1.45}
+.sheetbtn{width:auto;margin:0;padding:0 14px;border:none;border-radius:14px;font-size:1rem;
+  background:var(--card-bg);box-shadow:0 8px 20px rgba(3,36,21,.2)}
+.gauges{display:grid;grid-template-columns:1fr 1fr;gap:9px 18px;margin-top:13px;padding:0 4px}
+.gauge{display:flex;align-items:center;gap:8px}
+.g-glab{font-family:var(--font-display);font-size:.64rem;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--on-green);white-space:nowrap}
+.g-gval{font-family:var(--font-display);font-size:.72rem;font-weight:600;color:var(--on-green-soft);
+  min-width:18px;text-align:right}
+.bar{flex:1;height:7px;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;position:relative;transition:width .4s}
+.bar i::after{content:"";position:absolute;left:100%;top:0;height:100%;width:100vw;
+  background:var(--green-ink);opacity:.85}
+.f-forme{background:linear-gradient(90deg,#d6483d,#e8c34a,#23875a)}
+.f-moral{background:linear-gradient(90deg,#d6483d,#8b7cf6,#2f6fd6)}
+.f-addict{background:linear-gradient(90deg,#e8c34a,#d6483d)}
+.f-heat{background:linear-gradient(90deg,#e8964a,#d6483d)}
+.season-track{height:5px;border-radius:99px;background:rgba(7,46,29,.6);margin-top:11px;overflow:hidden}
+.season-track i{display:block;height:100%;border-radius:99px;
+  background:linear-gradient(90deg,var(--gold),var(--gold-bright));transition:width .4s}
+.sheet{background:var(--card-bg);border-radius:var(--radius);box-shadow:0 12px 30px var(--shadow);
+  padding:14px 16px;margin-top:10px;font-size:.85rem;animation:pop .25s ease}
+.sheet .srow{display:flex;justify-content:space-between;padding:2px 0;color:var(--text-1)}
+.sheet .srow b{color:var(--text-0);font-weight:700}
+.sheet .meta{margin-top:8px;color:var(--text-2);font-size:.78rem;line-height:1.5}
+
+/* ---------- résumé saison ---------- */
+.sum-head{font-family:var(--font-display);font-size:.85rem;letter-spacing:.08em;color:var(--green);
+  text-transform:uppercase;font-weight:600;margin-bottom:8px}
+.presse{font-style:italic;color:var(--text-1);font-size:.92rem;margin:8px 0 12px;line-height:1.5}
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
-.g-cell{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center}
-.g-num{font-size:1.25rem;font-weight:900}
-.g-lab{font-size:.6rem;letter-spacing:.1em;color:var(--dim);text-transform:uppercase;margin-top:2px}
-.sum-line{font-size:.88rem;margin:6px 0;line-height:1.4}
-.sum-line.warn{color:#fbbf24}.sum-line.bad{color:#ff6b6b}.sum-line.good{color:var(--green)}
-.news{color:var(--dim);font-size:.8rem;font-style:italic;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
-/* fin */
-.end-title{font-size:1.6rem;font-weight:900;text-align:center;margin:10px 0;text-transform:uppercase;letter-spacing:-.5px}
-.end-epitaph{text-align:center;font-style:italic;color:var(--dim);margin-bottom:16px;line-height:1.5}
+.g-cell{background:var(--card-bg-2);border:1.5px solid var(--line);border-radius:12px;padding:9px 4px;text-align:center}
+.g-num{font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:var(--text-0)}
+.g-lab{font-size:.6rem;letter-spacing:.1em;color:var(--text-2);text-transform:uppercase;font-weight:600;margin-top:2px}
+.sum-line{font-size:.88rem;margin:6px 0;line-height:1.45;color:var(--text-1)}
+.sum-line.warn{color:var(--warn)}.sum-line.bad{color:var(--bad)}.sum-line.good{color:var(--good)}
+.news{color:var(--text-2);font-size:.8rem;font-style:italic;margin-top:10px;border-top:1.5px dashed var(--line);padding-top:8px}
+
+/* ---------- fin ---------- */
+.end-title{font-family:var(--font-display);font-size:2.1rem;font-weight:700;text-align:center;margin:10px 0;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--bad)}
+.end-epitaph{text-align:center;font-style:italic;color:var(--text-2);margin-bottom:16px;line-height:1.55}
 .score-big{display:flex;gap:10px}
-.score-big>div{flex:1;text-align:center;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px}
-.score-big .n{font-size:1.7rem;font-weight:900}
-.legend .n{color:var(--gold)}.crapule .n{color:var(--neon)}
-.warn18{border:1px solid var(--neon);border-radius:16px;padding:18px;text-align:center;margin-top:18vh}
+.score-big>div{flex:1;text-align:center;border-radius:12px;padding:12px}
+.score-big .n{font-family:var(--font-display);font-size:1.8rem;font-weight:700}
+.legend{background:var(--cream)}.legend .n{color:var(--gold-deep)}
+.crapule{background:rgba(193,71,59,.1)}.crapule .n{color:var(--bad)}
+
+/* ---------- portail 18+ ---------- */
+.warn18{background:var(--card-bg);border-radius:var(--radius);box-shadow:0 12px 30px var(--shadow);
+  padding:26px 20px;text-align:center;margin-top:14vh}
 .warn18 .big{font-size:3rem}
-.footer{text-align:center;color:#55545f;font-size:.72rem;margin-top:30px;line-height:1.6}
-.trait{display:inline-block;font-size:.76rem;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:3px 9px;margin:2px 2px 0 0}
-.hof-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:.88rem}
+.warn18 h1.logo{color:var(--text-0);text-shadow:none;margin-top:12px}
+.warn18 .tagline{color:var(--text-2);font-weight:400}
+
+/* ---------- panthéon, badges, timeline ---------- */
+.trait{display:inline-block;font-size:.76rem;font-weight:600;background:var(--panel);border:1.5px solid var(--line);
+  border-radius:999px;padding:3px 10px;margin:2px 2px 0 0;color:var(--green-ink)}
+.hof-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;
+  border-bottom:1.5px dashed var(--line);font-size:.88rem;color:var(--text-1)}
+.hof-row b{color:var(--text-0)}
 .badge-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.badge-card{display:flex;gap:8px;align-items:center;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:8px;font-size:.82rem}
-.badge-card.locked{opacity:.45;filter:grayscale(1)}
+.badge-card{display:flex;gap:8px;align-items:center;background:var(--card-bg-2);border:1.5px solid var(--line);
+  border-radius:12px;padding:9px;font-size:.82rem;color:var(--text-1)}
+.badge-card b{color:var(--text-0)}
+.badge-card.locked{opacity:.5;filter:grayscale(1)}
 .badge-ico{font-size:1.3rem}
-.tl-row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line);font-size:.86rem}
-.tl-y{font-weight:800;color:var(--gold);min-width:44px;text-align:center;line-height:1.2}
-.tl-sub{color:var(--dim);font-size:.76rem;margin-top:2px}
+.tl-row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1.5px dashed var(--line);font-size:.86rem;color:var(--text-1)}
+.tl-y{font-family:var(--font-display);font-weight:700;color:var(--gold-deep);min-width:44px;text-align:center;line-height:1.2}
+.tl-sub{color:var(--text-2);font-size:.76rem;margin-top:2px}
 .tl-ic{font-size:.95rem;min-width:30px;text-align:right}
 @media (max-width:420px){.badge-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<button id="themeBtn" title="Mode jour / nuit" onclick="toggleTheme()">☀️</button>
 <div id="app"></div>
-<script>
-function applyTheme(t) {
-  document.body.classList.toggle("light", t === "light");
-  document.getElementById("themeBtn").textContent = t === "light" ? "🌙" : "☀️";
-}
-function toggleTheme() {
-  var t = document.body.classList.contains("light") ? "dark" : "light";
-  try { localStorage.setItem("maxou_theme", t); } catch (e) {}
-  applyTheme(t);
-}
-try {
-  var _t = localStorage.getItem("maxou_theme") || "dark";
-  if (location.search.indexOf("light") >= 0) _t = "light";
-  applyTheme(_t);
-} catch (e) {}
-</script>
 <script src="data.js"></script>
 <script src="events2.js"></script>
 <script src="engine.js"></script>

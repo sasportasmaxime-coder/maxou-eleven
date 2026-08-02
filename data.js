@@ -155,6 +155,46 @@ const CLUBS_D1 = ["Clermont Fiasco", "Racing de Strasbouffe", "FC Nantes-la-Gris
 const CLUBS_ELITE = ["Paris Saint-Blindé", "AS Monacash", "Olympique de Marseillance", "Real Magouille", "FC Barcelosers", "Manchester Shitty", "Loserpool FC", "Bayern Mucheprix", "Juventruc", "Inter Minable", "Borussia Tromblon", "Arsenal-les-Regrets"];
 const CLUBS_GOLF = ["Al-Fricard FC", "Qatar Blingz SC", "Al-Nassr-du-Portefeuille"];
 
+// couleurs de maillot [principale, secondaire] — clin d'œil aux vrais clubs parodiés
+const CLUB_COLORS = {
+  "Bourg-la-Boue": ["#8a6d3b", "#4a7c3f"],
+  "AS Ronds-Points": ["#e07b28", "#f2ede0"],
+  "Trifouillis FC": ["#4a7fb5", "#f2ede0"],
+  "Le Havre de Misère": ["#1b3a6b", "#7db9e8"],
+  "Grenoble-les-Flaques": ["#2456a4", "#eef2f6"],
+  "Pau-Paupières FC": ["#e8c34a", "#2e7d4f"],
+  "Rodez-vous en Enfer": ["#8c1c2c", "#e8c34a"],
+  "Amiens la Pluie": ["#eef0f2", "#23272b"],
+  "Clermont Fiasco": ["#c22d3f", "#20366b"],
+  "Racing de Strasbouffe": ["#2f6fd6", "#f2f4f7"],
+  "FC Nantes-la-Grisaille": ["#f0c832", "#1f7a3d"],
+  "Stade Rennais du Coin": ["#d6212f", "#1c1c1c"],
+  "Toulouse Tranquille": ["#5d3a8e", "#f2f0f6"],
+  "OGC Niche": ["#c8102e", "#232323"],
+  "Montpellier-sur-Suée": ["#e87722", "#1b2e5a"],
+  "Paris Saint-Blindé": ["#1b2f5e", "#d6212f"],
+  "AS Monacash": ["#d6212f", "#f5f5f2"],
+  "Olympique de Marseillance": ["#f2f4f7", "#57b0dd"],
+  "Real Magouille": ["#f5f5f2", "#c9971c"],
+  "FC Barcelosers": ["#1f4e9c", "#8c1c3a"],
+  "Manchester Shitty": ["#79c1e8", "#1b2f5e"],
+  "Loserpool FC": ["#c8102e", "#f5f5f2"],
+  "Bayern Mucheprix": ["#dc1f26", "#f5f5f2"],
+  "Juventruc": ["#1c1c1c", "#f5f5f2"],
+  "Inter Minable": ["#1f4e9c", "#1c1c1c"],
+  "Borussia Tromblon": ["#f7d117", "#1c1c1c"],
+  "Arsenal-les-Regrets": ["#dc1f26", "#f5f5f2"],
+  "Al-Fricard FC": ["#1f8a4c", "#f5f5f2"],
+  "Qatar Blingz SC": ["#7a1f3d", "#c9971c"],
+  "Al-Nassr-du-Portefeuille": ["#f0c832", "#1b3a6b"]
+};
+function clubColors(n) {
+  if (CLUB_COLORS[n]) return CLUB_COLORS[n];
+  let h = 0;
+  for (let i = 0; i < n.length; i++) h = (h * 31 + n.charCodeAt(i)) % 360;
+  return ["hsl(" + h + ",55%,45%)", "hsl(" + ((h + 40) % 360) + ",50%,88%)"];
+}
+
 // presse : titres selon la saison
 const PRESSE_BONNE = [
   "« {NOM} marche sur l'eau : la ligue est devenue son terrain de jeu privé »",

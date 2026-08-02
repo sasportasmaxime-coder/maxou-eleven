@@ -32,4 +32,4 @@ Uniquement le mode carrière, refait en version trash :
 - `index.html?demo=end` — écran de fin pré-rempli.
 - `index.html?demo=hof` / `?demo=badges` — écrans Panthéon / Badges.
 
-Fichiers : `index.html` (coquille + CSS + thème light), `data.js` (création, événements, presse, badges), `events2.js` (événements contextuels, arcs narratifs, événements par poste), `engine.js` (moteur de saison, mercato, UI, fins, persistance locale).
+Fichiers : `index.html` (coquille + CSS, habillage façon Destiny Eleven : pelouse rayée, cartes blanches, typos Poppins/Oswald), `data.js` (création, événements, presse, badges, couleurs des clubs), `events2.js` (événements contextuels, arcs narratifs, événements par poste), `engine.js` (moteur de saison, mercato, UI, fins, persistance locale).
