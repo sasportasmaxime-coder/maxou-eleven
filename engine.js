@@ -692,13 +692,39 @@ function renderEnd() {
     metaHtml += '<div class="sum-head" style="margin-top:14px">🎖️ Badges débloqués</div><div style="margin:6px 0">' +
       meta.newBadges.map(b => '<span class="trait">' + b.ico + ' ' + esc(b.nom) + '</span>').join(" ") + '</div>';
   }
+  // ---- compte rendu : accomplissements datés depuis le log de carrière ----
+  const years = (icon) => c.log.filter(r => r.ic.includes(icon)).map(r => r.y);
+  const span = (ys) => ys.map(String).join(" · ");
+  const acc = [];
+  const put = (n, ico, label, ys) => { if (n > 0) acc.push([ico, label + (n > 1 ? " ×" + n : ""), ys.length === n ? span(ys) : ""]); };
+  put(c.cdm, "🌍", "Champion du monde", years("🌍"));
+  put(c.bo, "🎖️", "Ballon d'Or", years("🎖️"));
+  put(c.ldc, "⭐", "Ligue des Champions", years("⭐"));
+  put(c.titres, "🥇", "Champion", years("🥇"));
+  put(c.coupes, "🏆", "Coupe nationale", years("🏆"));
+  if (c.selections) acc.push(["🌐", c.selections + " sélections nationales", c.cdm ? "dont une étoile" : ""]);
+  const eqType = c.log.filter(r => r.n >= 7.5 && r.m >= 15).length;
+  if (eqType) acc.push(["📋", "Équipe type de la saison" + (eqType > 1 ? " ×" + eqType : ""), ""]);
+  const best = c.log.reduce((a, r) => (r.m >= 10 && r.n > (a ? a.n : -1) ? r : a), null);
+  if (best && best.n >= 7) acc.push(["🔥", "Meilleure saison : " + best.n + " de moyenne", best.y + " · " + esc(best.club)]);
+  if (c.buts >= 100) acc.push(["⚽", c.buts + " buts en carrière", c.matchs + " matchs"]);
+  if (S.flags.capitaine) acc.push(["©️", "Capitaine de club", "le brassard, le vrai"]);
+  if (c.clubs.length === 1 && c.saisons >= 10) acc.push(["🏠", "Homme d'un seul club", esc(c.clubs[0])]);
+  else if (c.clubs.length >= 5) acc.push(["🧳", "Globe-trotter : " + c.clubs.length + " clubs", "fidèle à personne"]);
+  if (S.tier === "GOLF") acc.push(["🛢️", "Exil doré dans le Golfe", "l'argent n'a pas d'odeur"]);
+  if (!acc.length) acc.push(["🕳️", "Rien. Littéralement rien.", "pas un titre, pas une cape — respect, d'une certaine manière"]);
+  const accHtml = acc.map(a => '<div class="acc-row"><span class="acc-ico">' + a[0] + '</span>' +
+    '<span class="acc-t">' + a[1] + '</span><span class="acc-y">' + a[2] + '</span></div>').join("");
+
   app.innerHTML =
     '<div class="card"><p class="end-title">' + e.t + '</p>' +
     '<p class="end-epitaph">' + esc(e.ep) + '</p>' +
+    '<div class="final-score"><div class="fs-n">' + (lg + cr) + '</div><div class="fs-l">Score final</div>' +
+    '<div class="fs-rank">' + rankTitle(lg, cr) + '</div></div>' +
     '<div class="score-big"><div class="legend"><div class="n">' + lg + '</div><div class="g-lab">points de légende</div></div>' +
     '<div class="crapule"><div class="n">' + cr + '</div><div class="g-lab">points de crapule</div></div></div>' +
-    '<p style="text-align:center;margin:14px 0;font-weight:800">' + rankTitle(lg, cr) + '</p>' +
-    '<div class="sum-head">Carrière · ' + S.nom + ' · ' + c.saisons + ' saisons</div>' +
+    '<div class="sum-head" style="margin-top:16px">🏆 Ce qu\'il a accompli</div>' + accHtml +
+    '<div class="sum-head" style="margin-top:16px">Carrière · ' + S.nom + ' · ' + c.saisons + ' saisons</div>' +
     '<div class="grid4">' + cell(c.matchs, "matchs") + cell(c.buts, "buts") + cell(c.passes, "passes") + cell(c.selections, "capes") + '</div>' +
     '<div class="grid4">' + cell(c.titres + c.coupes, "trophées") + cell(c.ldc, "LDC") + cell(c.cdm, "CDM") + cell(c.bo, "ballons d'or") + '</div>' +
     '<p class="sum-line">💰 Fortune finale : ' + fmtMoney(S.argent) + ' · Clubs : ' + c.clubs.map(esc).join(", ") + '</p>' +
